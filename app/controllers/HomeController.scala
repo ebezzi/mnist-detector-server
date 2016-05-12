@@ -38,7 +38,7 @@ class HomeController @Inject() extends Controller {
 
     println (input.length)
 
-    val dataDir = "/opt/spark-deep-learning-app/src/main/resources/convnet/"
+    val dataDir = "conf/resources/"
 
     val conf = scala.io.Source.fromFile(new File(dataDir + "conf.json")).mkString
 
