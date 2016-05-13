@@ -36,8 +36,6 @@ class HomeController @Inject() extends Controller {
 
     val input = req.body.asJson.get.as[Seq[Double]].toArray.map(255-_)
 
-    println (input.length)
-
     val dataDir = "conf/resources/"
 
     val conf = scala.io.Source.fromFile(new File(dataDir + "conf.json")).mkString
@@ -54,30 +52,11 @@ class HomeController @Inject() extends Controller {
     savedNetwork.init()
     savedNetwork.setParameters(newParams)
 
-//    val m = input.sliding(28,28).map(_.toArray).toArray
-
-//    println(m)
-
     val xs = new NDArray(input, Array(1, 784), 'c')
-//    val xs = new NDArray(m)
-
-//    println(xs)
 
     val output = savedNetwork.output(xs)
 
-//
-//    val eval = new Evaluation()
-//    val ds = new DataSet()
-//    ds.setFeatures()
-//    val output = savedNetwork.output(ds.getFeatureMatrix)
-//    eval.eval(ds.getLabels, output)
-//    println(eval.stats())
-//
     val v = (0 to 9).map(output.getInt(_)).toList
-//
-//    println(v.indexOf(1))
-//
-//    Ok(v.indexOf(1).toString)
 
     val res = Json.obj("results" -> Json.arr(
       v, v
