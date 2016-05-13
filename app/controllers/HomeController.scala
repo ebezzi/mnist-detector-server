@@ -23,6 +23,24 @@ import play.api.mvc._
 class HomeController @Inject() extends Controller {
 
   /**
+    * Lazily initialize the saved CNN.
+    */
+  lazy val savedNetwork = {
+    val dataDir = "conf/resources/"
+    val conf = scala.io.Source.fromFile(new File(dataDir + "conf.json")).mkString
+    //Load network configuration from disk:
+    val confFromJson = MultiLayerConfiguration.fromJson(conf)
+    //Load parameters from disk:;
+    val dis = new DataInputStream(new FileInputStream(dataDir + "coefficients.bin"))
+    val newParams = Nd4j.read(dis)
+    //Create a MultiLayerNetwork from the saved configuration and parameters
+    val savedNetwork = new MultiLayerNetwork(confFromJson)
+    savedNetwork.init()
+    savedNetwork.setParameters(newParams)
+    savedNetwork
+  }
+
+  /**
    * Create an Action to render an HTML page with a welcome message.
    * The configuration in the `routes` file means that this method
    * will be called when the application receives a `GET` request with
@@ -33,38 +51,14 @@ class HomeController @Inject() extends Controller {
   }
 
   def detect() = Action { req =>
-
     val input = req.body.asJson.get.as[Seq[Double]].toArray.map(255-_)
-
-    val dataDir = "conf/resources/"
-
-    val conf = scala.io.Source.fromFile(new File(dataDir + "conf.json")).mkString
-
-    //Load network configuration from disk:
-    val confFromJson = MultiLayerConfiguration.fromJson((conf))
-
-    //Load parameters from disk:;
-    val dis = new DataInputStream(new FileInputStream(dataDir + "coefficients.bin"))
-    val newParams = Nd4j.read(dis)
-
-    //Create a MultiLayerNetwork from the saved configuration and parameters
-    val savedNetwork = new MultiLayerNetwork(confFromJson)
-    savedNetwork.init()
-    savedNetwork.setParameters(newParams)
-
     val xs = new NDArray(input, Array(1, 784), 'c')
-
     val output = savedNetwork.output(xs)
-
     val v = (0 to 9).map(output.getInt(_)).toList
-
     val res = Json.obj("results" -> Json.arr(
       v, v
     ))
-
     Ok(res)
-
-
   }
 
 }
