@@ -9,6 +9,9 @@ class Main {
         this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
         this.canvas.addEventListener('mouseup',   this.onMouseUp.bind(this));
         this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+        this.canvas.addEventListener('touchstart', this.onMouseDown.bind(this));
+        this.canvas.addEventListener('touchend',   this.onMouseUp.bind(this));
+        this.canvas.addEventListener('touchmove', this.onMouseMove.bind(this));
         this.initialize();
     }
     initialize() {
