@@ -1,4 +1,4 @@
-# MNIST DetectorServer
+# MNIST Detector Server
 An example on how to use a [Convolutional Neural Network](https://en.wikipedia.org/wiki/Convolutional_neural_network)
 trained on [Apache Spark](http://spark.apache.org/).   
 Feel free to fork and contribute!
