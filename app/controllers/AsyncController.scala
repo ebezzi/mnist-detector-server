@@ -1,11 +1,12 @@
 package controllers
 
-import akka.actor.ActorSystem
 import javax.inject._
-import play.api._
+
+import akka.actor.ActorSystem
 import play.api.mvc._
-import scala.concurrent.{ExecutionContext, Future, Promise}
+
 import scala.concurrent.duration._
+import scala.concurrent.{ExecutionContext, Future, Promise}
 
 /**
  * This controller creates an `Action` that demonstrates how to write
@@ -13,12 +14,12 @@ import scala.concurrent.duration._
  * asynchronously delay sending a response for 1 second.
  *
  * @param actorSystem We need the `ActorSystem`'s `Scheduler` to
- * run code after a delay.
- * @param exec We need an `ExecutionContext` to execute our
- * asynchronous code.
+ *                    run code after a delay.
+ * @param exec        We need an `ExecutionContext` to execute our
+ *                    asynchronous code.
  */
 @Singleton
-class AsyncController @Inject() (actorSystem: ActorSystem)(implicit exec: ExecutionContext) extends Controller {
+class AsyncController @Inject()(actorSystem: ActorSystem)(implicit exec: ExecutionContext) extends InjectedController {
 
   /**
    * Create an Action that returns a plain text message after a delay
@@ -29,12 +30,16 @@ class AsyncController @Inject() (actorSystem: ActorSystem)(implicit exec: Execut
    * a path of `/message`.
    */
   def message = Action.async {
-    getFutureMessage(1.second).map { msg => Ok(msg) }
+    getFutureMessage(1.second).map { msg =>
+      Ok(msg)
+    }
   }
 
   private def getFutureMessage(delayTime: FiniteDuration): Future[String] = {
     val promise: Promise[String] = Promise[String]()
-    actorSystem.scheduler.scheduleOnce(delayTime) { promise.success("Hi!") }
+    actorSystem.scheduler.scheduleOnce(delayTime) {
+      promise.success("Hi!")
+    }
     promise.future
   }
 
