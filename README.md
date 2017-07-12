@@ -19,3 +19,7 @@ and [Vincibean](https://github.com/Vincibean) ([Andrea Bessi](https://www.linked
 
 ## Try It on Heroku!
 This example was deployed on Heroku. You can find it [here](http://shrouded-taiga-33403.herokuapp.com/). Feel free to try it!
+
+## License
+Unless stated elsewhere, all files herein are licensed under the GPLv3 license. For more information, please see the
+[LICENSE](https://github.com/ebezzi/mnist-detector-server/blob/master/LICENSE) file.
