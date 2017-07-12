@@ -1,17 +1,12 @@
 package controllers
 
-import java.io.{DataInputStream, FileInputStream}
+import java.io.{DataInputStream, File, FileInputStream}
 import javax.inject._
-import org.deeplearning4j.eval.Evaluation
+
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
-import org.nd4j.linalg.api.ndarray.{BaseNDArray, INDArray}
 import org.nd4j.linalg.cpu.NDArray
-import org.nd4j.linalg.dataset.DataSet
 import org.nd4j.linalg.factory.Nd4j
-import java.io.File
-
-import play.api._
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -20,12 +15,12 @@ import play.api.mvc._
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() extends Controller {
+class HomeController @Inject() extends InjectedController {
 
   /**
-    * Lazily initialize the saved CNN.
-    */
-  lazy val savedNetwork = {
+   * Lazily initialize the saved CNN.
+   */
+  lazy val savedNetwork: MultiLayerNetwork = {
     val dataDir = "conf/resources/"
     val conf = scala.io.Source.fromFile(new File(dataDir + "conf.json")).mkString
     //Load network configuration from disk:
@@ -50,14 +45,18 @@ class HomeController @Inject() extends Controller {
     Ok(views.html.index())
   }
 
-  def detect() = Action { req =>
-    val input = req.body.asJson.get.as[Seq[Double]].toArray.map(255-_)
-    val xs = new NDArray(input, Array(1, 784), 'c')
+  def detect() = Action(parse.json) { req =>
+    val json = req.body
+    val data = json.as[Seq[Double]].toArray.map(255 - _)
+    val xs = new NDArray(data, Array(1, 784), 'c')
     val output = savedNetwork.output(xs)
     val v = (0 to 9).map(output.getInt(_)).toList
-    val res = Json.obj("results" -> Json.arr(
-      v, v
-    ))
+    val res = Json.obj(
+      "results" -> Json.arr(
+        v,
+        v
+      )
+    )
     Ok(res)
   }
 
